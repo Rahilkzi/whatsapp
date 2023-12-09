@@ -9,8 +9,26 @@ const {
 const SQLiteStore = require('./SQLiteStore');
 
 const app = express();
+app.use(express.static('./views'));
 
 app.set('view engine', 'ejs');
+
+const url =
+  'https://ded98137-ae7a-481c-9ad7-8402fd1f3d29.pushnotifications.pusher.com/publish_api/v1/instances/ded98137-ae7a-481c-9ad7-8402fd1f3d29/publishes';
+const headers = {
+  'Content-Type': 'application/json',
+  Authorization:
+    'Bearer CB77445D96FABD2A1F74F54D25E6AB18FE85BCDDE60E6F99E17EBF3D15330B2C',
+};
+let data = {
+  interests: ['hello'],
+  web: {
+    notification: {
+      title: 'Hello',
+      body: 'Hello, world!',
+    },
+  },
+};
 
 // Function to handle sending messages
 async function sendMessage(message, content, image) {
@@ -39,7 +57,6 @@ const client = new Client({
   },
 });
 
-
 let qrCodeImage = ''; // Define a variable to store the QR code image data URL
 
 client.initialize();
@@ -65,38 +82,56 @@ client.on('auth_failure', (msg) => {
 });
 
 client.on('ready', () => {
+  data = {
+    interests: ['hello'],
+    web: {
+      notification: {
+        title: 'Ready',
+        body: 'whatsapp is ready',
+      },
+    },
+  };
+  pushnot(url, data, headers);
   console.log('READY');
 });
 
 client.on('remote_session_saved', () => {
+  let data = {
+    interests: ['hello'],
+    web: {
+      notification: {
+        title: 'Saved',
+        body: 'Whatsapp Session Saved',
+      },
+    },
+  };
+  pushnot(url, data, headers);
   console.log('saved');
 });
 
 client.on('message', async (message) => {
   // message.getContact().then(async (chats) => {
   //   if (chats.number === '919405013913') {
-      try {
-        if (message.body === '!ping') {
-          await message.reply('pong');
-        }
+  try {
+    if (message.body === '!ping') {
+      await message.reply('pong');
+    }
 
-        const apiUrl =
-          process.env.URL +
-          'api?user_input=' +
-          encodeURIComponent(message.body);
-        // const apiUrl =
-        //   'http://127.0.0.1:5000/api?user_input=' +
-        //   encodeURIComponent(message.body);
+    const apiUrl =
+      process.env.URL + 'api?user_input=' + encodeURIComponent(message.body);
+    // const apiUrl =
+    //   'http://127.0.0.1:5000/api?user_input=' +
+    //   encodeURIComponent(message.body);
 
-        const response = await axios.get(apiUrl);
-        const data = response.data;
-        const content = data.content;
-        const image = data.images[0];
+    const response = await axios.get(apiUrl);
+    const data = response.data;
+    const content = data.content;
+    const image = data.images[0];
 
-        await sendMessage(message, content, image);
-      } catch (error) {
-        console.error('Message Handling Error:', error.message);
-      }
+    await sendMessage(message, content, image);
+  } catch (error) {
+    console.error('Message Handling Error:', error.message);
+  }
   //   }
   // });
 });
@@ -117,5 +152,16 @@ app.get('/', async (req, res) => {
     res.render('index', { qr: qrCodeImage, hide: '', errmsg: '' });
   }
 });
+
+const pushnot = (url, data, headers) => {
+  axios
+    .post(url, data, { headers })
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error(error.message);
+    });
+};
 
 app.listen(PORT, () => console.log('Server is running on port ' + PORT));
