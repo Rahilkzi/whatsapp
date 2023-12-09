@@ -3,18 +3,20 @@
     <title>WhatsApp QR Code</title>
   </head>
   <body>
-    <img id="qrCodeImage" src="<%= qr %>" <%= hide %> alt="QR Code">
+    <img id="qrCodeImage" src="<%= qr %>" <%="hide" % />
+    alt="QR Code">
     <h1><%=errmsg%></h1>
     <script src="https://js.pusher.com/beams/1.0/push-notifications-cdn.js"></script>
-<script>
-  const beamsClient = new PusherPushNotifications.Client({
-    instanceId: 'ded98137-ae7a-481c-9ad7-8402fd1f3d29',
-  });
+    <script>
+      const beamsClient = new PusherPushNotifications.Client({
+        instanceId: 'ded98137-ae7a-481c-9ad7-8402fd1f3d29',
+      });
 
-  beamsClient.start()
-    .then(() => beamsClient.addDeviceInterest('hello'))
-    .then(() => console.log('Successfully registered and subscribed!'))
-    .catch(console.error);
-</script>
+      beamsClient
+        .start()
+        .then(() => beamsClient.addDeviceInterest('hello'))
+        .then(() => console.log('Successfully registered and subscribed!'))
+        .catch(console.error);
+    </script>
   </body>
 </html>
