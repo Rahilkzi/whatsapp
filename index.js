@@ -122,6 +122,9 @@ client.on('message', async (message) => {
     // const apiUrl =
     //   'http://127.0.0.1:5000/api?user_input=' +
     //   encodeURIComponent(message.body);
+    // const apiUrl =
+    //   'https://bard-api-three.vercel.app/api?user_input=' +
+    //   encodeURIComponent(message.body);
 
     const response = await axios.get(apiUrl);
     const data = response.data;
